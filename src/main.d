@@ -90,7 +90,7 @@ void writeTag(Dsymbol sym)
 	if (!sym.loc.isValid) return;
 	const(char)[] filename = sym.loc.filename.toDString;
 	if (!filename) return;
-	writefln("%s\t%s\t%s", sym.toString, filename, sym.loc.linnum);
+	writefln("%s\t%s\t%s", sym.ident.toString, filename, sym.loc.linnum);
 }
 
 void writeTag(Module m)
@@ -99,7 +99,7 @@ void writeTag(Module m)
 
 	if (!m.srcfile.name) return;
 	size_t line = m.md ? m.md.loc.linnum : 1;
-	writefln("%s\t%s\t%s", m.toString, m.srcfile.toString, line);
+	writefln("%s\t%s\t%s", m.ident.toString, m.srcfile.toString, line);
 }
 
 alias TaggableSymbols = AliasSeq!(
