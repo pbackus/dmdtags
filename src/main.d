@@ -1,5 +1,15 @@
 module main;
 
+import std.meta: AliasSeq;
+
+import dmd.declaration: AliasDeclaration, VarDeclaration;
+import dmd.func: FuncDeclaration;
+import dmd.denum: EnumDeclaration, EnumMember;
+import dmd.dversion: VersionSymbol;
+import dmd.dstruct: StructDeclaration;
+import dmd.dclass: ClassDeclaration;
+import dmd.dtemplate: TemplateDeclaration;
+import dmd.nspace: Nspace;
 import dmd.dmodule: Module;
 import dmd.dsymbol: Dsymbol;
 import dmd.visitor: SemanticTimeTransitiveVisitor;
@@ -92,18 +102,23 @@ void writeTag(Module m)
 	writefln("%s\t%s\t%s", m.toString, m.srcfile.toString, line);
 }
 
+alias TaggableSymbols = AliasSeq!(
+	AliasDeclaration,
+	VarDeclaration,
+	FuncDeclaration,
+	EnumMember,
+	VersionSymbol,
+	StructDeclaration,
+	ClassDeclaration,
+	EnumDeclaration,
+	TemplateDeclaration,
+	Nspace,
+	Module
+);
+
 extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
 {
 	import dmd.dsymbol: ScopeDsymbol;
-	import dmd.declaration: AliasDeclaration, VarDeclaration;
-	import dmd.func: FuncDeclaration;
-	import dmd.denum: EnumDeclaration, EnumMember;
-	import dmd.dversion: VersionSymbol;
-	import dmd.dstruct: StructDeclaration;
-	import dmd.dclass: ClassDeclaration;
-	import dmd.dtemplate: TemplateDeclaration;
-	import dmd.nspace: Nspace;
-	import dmd.dmodule: Module;
 
 	alias visit = typeof(super).visit;
 
@@ -117,64 +132,12 @@ extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
 		}
 	}
 
-	override void visit(AliasDeclaration sym)
-	{
-		writeTag(sym);
-	}
-
-	override void visit(VarDeclaration sym)
-	{
-		writeTag(sym);
-	}
-
-	override void visit(FuncDeclaration sym)
-	{
-		writeTag(sym);
-	}
-
-	override void visit(EnumMember sym)
-	{
-		writeTag(sym);
-	}
-
-	override void visit(VersionSymbol sym)
-	{
-		writeTag(sym);
-	}
-
-	override void visit(StructDeclaration sym)
-	{
-		writeTag(sym);
-		visitMembers(sym);
-	}
-
-	override void visit(ClassDeclaration sym)
-	{
-		writeTag(sym);
-		visitMembers(sym);
-	}
-
-	override void visit(EnumDeclaration sym)
-	{
-		writeTag(sym);
-		visitMembers(sym);
-	}
-
-	override void visit(TemplateDeclaration sym)
-	{
-		writeTag(sym);
-		visitMembers(sym);
-	}
-
-	override void visit(Nspace sym)
-	{
-		writeTag(sym);
-		visitMembers(sym);
-	}
-
-	override void visit(Module sym)
-	{
-		writeTag(sym);
-		visitMembers(sym);
+	static foreach (Symbol; TaggableSymbols) {
+		override void visit(Symbol sym)
+		{
+			writeTag(sym);
+			static if (is(Symbol : ScopeDsymbol))
+				visitMembers(sym);
+		}
 	}
 }
