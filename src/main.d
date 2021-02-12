@@ -75,20 +75,104 @@ Module parseModule(string path)
 void writeTag(Dsymbol sym)
 {
 	import std.stdio: writefln;
-	import core.stdc.string: strlen;
+	import dmd.root.string: toDString;
 
-	const(char)[] filename = sym.loc.filename[0 .. strlen(sym.loc.filename)];
+	if (!sym.loc.isValid) return;
+	const(char)[] filename = sym.loc.filename.toDString;
 	writefln("%s\t%s\t%s", sym.toString, filename, sym.loc.linnum);
+}
+
+void writeTag(Module m)
+{
+	import std.stdio: writefln;
+
+	if (!m.srcfile.name) return;
+	writefln("%s\t%s\t%s", m.toString, m.srcfile.toString, 1);
 }
 
 extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
 {
-	import dmd.declaration;
+	import dmd.dsymbol: ScopeDsymbol;
+	import dmd.declaration: AliasDeclaration, VarDeclaration;
+	import dmd.func: FuncDeclaration;
+	import dmd.denum: EnumDeclaration, EnumMember;
+	import dmd.dversion: VersionSymbol;
+	import dmd.dstruct: StructDeclaration;
+	import dmd.dclass: ClassDeclaration;
+	import dmd.dtemplate: TemplateDeclaration;
+	import dmd.nspace: Nspace;
+	import dmd.dmodule: Module;
 
 	alias visit = typeof(super).visit;
 
-	override void visit(VarDeclaration d)
+	void visitMembers(ScopeDsymbol s)
 	{
-		writeTag(d);
+		if (s.members) {
+			foreach (m; *s.members) {
+				if (m)
+					m.accept(this);
+			}
+		}
+	}
+
+	override void visit(AliasDeclaration sym)
+	{
+		writeTag(sym);
+	}
+
+	override void visit(VarDeclaration sym)
+	{
+		writeTag(sym);
+	}
+
+	override void visit(FuncDeclaration sym)
+	{
+		writeTag(sym);
+	}
+
+	override void visit(EnumMember sym)
+	{
+		writeTag(sym);
+	}
+
+	override void visit(VersionSymbol sym)
+	{
+		writeTag(sym);
+	}
+
+	override void visit(StructDeclaration sym)
+	{
+		writeTag(sym);
+		visitMembers(sym);
+	}
+
+	override void visit(ClassDeclaration sym)
+	{
+		writeTag(sym);
+		visitMembers(sym);
+	}
+
+	override void visit(EnumDeclaration sym)
+	{
+		writeTag(sym);
+		visitMembers(sym);
+	}
+
+	override void visit(TemplateDeclaration sym)
+	{
+		writeTag(sym);
+		visitMembers(sym);
+	}
+
+	override void visit(Nspace sym)
+	{
+		writeTag(sym);
+		visitMembers(sym);
+	}
+
+	override void visit(Module sym)
+	{
+		writeTag(sym);
+		visitMembers(sym);
 	}
 }
