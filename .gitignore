@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/dmdtags
+dmdtags.so
+dmdtags.dylib
+dmdtags.dll
+dmdtags.a
+dmdtags.lib
+dmdtags-test-*
+*.exe
+*.o
+*.obj
+*.lst
