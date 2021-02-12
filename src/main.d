@@ -79,6 +79,7 @@ void writeTag(Dsymbol sym)
 
 	if (!sym.loc.isValid) return;
 	const(char)[] filename = sym.loc.filename.toDString;
+	if (!filename) return;
 	writefln("%s\t%s\t%s", sym.toString, filename, sym.loc.linnum);
 }
 
