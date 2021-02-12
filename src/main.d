@@ -88,7 +88,8 @@ void writeTag(Module m)
 	import std.stdio: writefln;
 
 	if (!m.srcfile.name) return;
-	writefln("%s\t%s\t%s", m.toString, m.srcfile.toString, 1);
+	size_t line = m.md ? m.md.loc.linnum : 1;
+	writefln("%s\t%s\t%s", m.toString, m.srcfile.toString, line);
 }
 
 extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
