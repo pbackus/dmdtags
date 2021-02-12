@@ -1,6 +1,7 @@
 module main;
 
 import dmd.dmodule: Module;
+import dmd.dsymbol: Dsymbol;
 import dmd.visitor: SemanticTimeTransitiveVisitor;
 
 int main(string[] args)
@@ -71,6 +72,15 @@ Module parseModule(string path)
 	return mod.parse();
 }
 
+void writeTag(Dsymbol sym)
+{
+	import std.stdio: writefln;
+	import core.stdc.string: strlen;
+
+	const(char)[] filename = sym.loc.filename[0 .. strlen(sym.loc.filename)];
+	writefln("%s\t%s\t%s", sym.toString, filename, sym.loc.linnum);
+}
+
 extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
 {
 	import dmd.declaration;
@@ -79,10 +89,6 @@ extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
 
 	override void visit(VarDeclaration d)
 	{
-		import std.stdio: writefln;
-		import core.stdc.string: strlen;
-
-		const(char)[] filename = d.loc.filename[0 .. strlen(d.loc.filename)];
-		writefln("%s\t%s\t%s", d.toString, filename, d.loc.linnum);
+		writeTag(d);
 	}
 }
