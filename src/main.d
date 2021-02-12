@@ -1,14 +1,35 @@
 module main;
 
-import std.algorithm.searching: endsWith;
-import std.range: only;
-import std.path: baseName, stripExtension;
-
-import dmd.globals: Loc;
 import dmd.dmodule: Module;
-import dmd.tokens: TOK;
-import dmd.identifier: Identifier;
-import dmd.id: Id;
+
+int main(string[] args)
+{
+	import std.stdio: stderr;
+
+	try tryMain(args);
+	catch (Exception e) {
+		stderr.writeln("dmdtags: ", e.message);
+		return 1;
+	}
+	return 0;
+}
+
+void tryMain(string[] args)
+{
+	checkUsage(args);
+	string path = args[1];
+	initializeDMD();
+	Module parsedMod = parseModule(path);
+}
+
+void checkUsage(string[] args)
+{
+	import std.exception: enforce;
+	import std.algorithm.searching: endsWith;
+
+	enforce(args.length >= 2, "Must pass a source file as an argument");
+	enforce(args[1].endsWith(".d", ".di"), "Source file must end in .d or .di");
+}
 
 void initializeDMD()
 {
@@ -31,22 +52,18 @@ void initializeDMD()
 	//FileCache._init();
 }
 
-void main(string[] args)
+Module parseModule(string path)
 {
+	import std.path: baseName, stripExtension;
 	import std.exception: enforce;
 
-	enforce(args.length >= 2, "Must pass a source file as an argument");
-	enforce(args[1].endsWith(".d", ".di"), "Source file must end in .d or .di");
+	import dmd.identifier: Identifier;
+	import dmd.globals: Loc;
 
-	string filename = args[1];
-	string modname = filename.baseName.stripExtension;
-
-	initializeDMD();
-
-	auto id = Identifier.idPool(modname);
-	auto mod = new Module(filename, id, false, false);
+	string modname = path.baseName.stripExtension;
+	Identifier id = Identifier.idPool(modname);
+	auto mod = new Module(path, id, false, false);
 	bool success = mod.read(Loc.initial);
 	enforce(success, "Failed to read module");
-
-	Module parsedMod = mod.parse();
+	return mod.parse();
 }
