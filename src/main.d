@@ -1,6 +1,7 @@
 module main;
 
 import dmd.dmodule: Module;
+import dmd.visitor: SemanticTimeTransitiveVisitor;
 
 int main(string[] args)
 {
@@ -20,6 +21,8 @@ void tryMain(string[] args)
 	string path = args[1];
 	initializeDMD();
 	Module parsedMod = parseModule(path);
+	scope v = new DeclarationVisitor();
+	parsedMod.accept(v);
 }
 
 void checkUsage(string[] args)
@@ -66,4 +69,20 @@ Module parseModule(string path)
 	bool success = mod.read(Loc.initial);
 	enforce(success, "Failed to read module");
 	return mod.parse();
+}
+
+extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
+{
+	import dmd.declaration;
+
+	alias visit = typeof(super).visit;
+
+	override void visit(VarDeclaration d)
+	{
+		import std.stdio: writefln;
+		import core.stdc.string: strlen;
+
+		const(char)[] filename = d.loc.filename[0 .. strlen(d.loc.filename)];
+		writefln("%s\t%s\t%s", d.toString, filename, d.loc.linnum);
+	}
 }
