@@ -36,8 +36,8 @@ void tryMain(string[] args)
 	initDMD();
 	auto parseResult = parseModule(path);
 	enforce(parseResult.diagnostics.errors == 0, "Module failed to parse");
-	scope v = new DeclarationVisitor();
-	parseResult.module_.accept(v);
+	scope tagger = new SymbolTagger();
+	parseResult.module_.accept(tagger);
 }
 
 void checkUsage(string[] args)
@@ -83,7 +83,7 @@ alias TaggableSymbols = AliasSeq!(
 	Module
 );
 
-extern(C++) class DeclarationVisitor : SemanticTimeTransitiveVisitor
+extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 {
 	import dmd.dsymbol: ScopeDsymbol;
 
