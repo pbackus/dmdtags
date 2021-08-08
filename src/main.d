@@ -27,14 +27,40 @@ int main(string[] args)
 	return 0;
 }
 
+void printUsage()
+{
+	import std.stdio: stderr, writeln;
+
+	stderr.writeln("Usage: dmdtags [-R] [path...]");
+}
+
 void tryMain(string[] args)
 {
 	import std.array: appender;
 	import std.algorithm: sort, each;
+	import std.getopt: getopt;
 	import std.stdio: writeln;
+	import std.file: isDir, isFile, dirEntries, SpanMode;
 
-	checkUsage(args);
-	string[] paths = args[1 .. $];
+	bool recurse;
+	auto result = args.getopt(
+		"recurse|R", &recurse
+	);
+
+	if (result.helpWanted) {
+		printUsage();
+		return;
+	}
+
+	string[] paths;
+	if (args.length > 1) {
+		paths = args[1 .. $];
+	} else if (recurse) {
+		paths = ["."];
+	} else {
+		printUsage();
+		return;
+	}
 
 	initDMD();
 	auto tags = appender!(Tag[]);
@@ -49,23 +75,27 @@ void tryMain(string[] args)
 
 	scope tagger = new SymbolTagger(&sinkFn, &tags);
 
-	foreach (path; paths) {
+	void processSourceFile(string path)
+	{
 		auto parseResult = parseModule(path);
 		parseResult.module_.accept(tagger);
+	}
+
+	foreach (path; paths) {
+		if (path.isFile) {
+			processSourceFile(path);
+		} else if (recurse && path.isDir) {
+			foreach (entry; dirEntries(path, "*.{d,di}", SpanMode.depth)) {
+				if (entry.isFile) {
+					processSourceFile(entry.name);
+				}
+			}
+		}
 	}
 
 	sort(tags[]);
 	writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
 	tags[].each!writeln;
-}
-
-void checkUsage(string[] args)
-{
-	import std.exception: enforce;
-	import std.algorithm.searching: endsWith;
-
-	enforce(args.length >= 2, "Must pass a source file as an argument");
-	enforce(args[1].endsWith(".d", ".di"), "Source file must end in .d or .di");
 }
 
 struct Tag
