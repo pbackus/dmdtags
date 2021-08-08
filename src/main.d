@@ -55,6 +55,7 @@ void tryMain(string[] args)
 	}
 
 	sort(tags[]);
+	writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
 	tags[].each!writeln;
 }
 
