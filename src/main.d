@@ -35,7 +35,6 @@ void tryMain(string[] args)
 	string path = args[1];
 	initDMD();
 	auto parseResult = parseModule(path);
-	enforce(parseResult.diagnostics.errors == 0, "Module failed to parse");
 	scope tagger = new SymbolTagger();
 	parseResult.module_.accept(tagger);
 }
