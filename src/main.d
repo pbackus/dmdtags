@@ -113,7 +113,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	private void* context;
 	private TagSink sink;
 
-	extern(D) this(TagSink sink, void* context)
+	this(TagSink sink, void* context)
 	{
 		this.sink = sink;
 		this.context = context;
