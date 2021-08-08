@@ -32,11 +32,15 @@ void tryMain(string[] args)
 	import std.exception: enforce;
 
 	checkUsage(args);
-	string path = args[1];
+	string[] paths = args[1 .. $];
+
 	initDMD();
-	auto parseResult = parseModule(path);
 	scope tagger = new SymbolTagger();
-	parseResult.module_.accept(tagger);
+
+	foreach (path; paths) {
+		auto parseResult = parseModule(path);
+		parseResult.module_.accept(tagger);
+	}
 }
 
 void checkUsage(string[] args)
