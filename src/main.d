@@ -37,14 +37,14 @@ void tryMain(string[] args)
 	string[] paths = args[1 .. $];
 
 	initDMD();
-	auto tags = appender!(const(char)[][]);
+	auto tags = appender!(Tag[]);
 
 	static extern(C++)
-	void sinkFn(const(char)* ptr, size_t length, void* context)
+	void sinkFn(Tag tag, void* context)
 	{
 		import std.range: put;
 
-		put(*cast(typeof(tags)*) context, ptr[0 .. length]);
+		put(*cast(typeof(tags)*) context, tag);
 	}
 
 	scope tagger = new SymbolTagger(&sinkFn, &tags);
@@ -68,28 +68,69 @@ void checkUsage(string[] args)
 	enforce(args[1].endsWith(".d", ".di"), "Source file must end in .d or .di");
 }
 
-alias TagSink = extern(C++) void function(const(char)*, size_t, void*);
+struct Tag
+{
+	// Separate ptr + length for extern(C++) compatibility
+	const(char)* identifierPtr;
+	size_t identifierLength;
+	const(char)* filenamePtr;
+	size_t filenameLength;
+	size_t lineNumber;
+
+	this(const(char)[] identifier, const(char)[] filename, size_t lineNumber)
+	{
+		this.identifierPtr = identifier.ptr;
+		this.identifierLength = identifier.length;
+		this.filenamePtr = filename.ptr;
+		this.filenameLength = filename.length;
+		this.lineNumber = lineNumber;
+	}
+
+	const(char)[] identifier()
+	{
+		return identifierPtr[0 .. identifierLength];
+	}
+
+	const(char)[] filename()
+	{
+		return filenamePtr[0 .. filenameLength];
+	}
+
+	int opCmp(Tag rhs)
+	{
+		import std.algorithm: cmp;
+		import std.utf: byCodeUnit;
+
+		return cmp(this.identifier.byCodeUnit, rhs.identifier.byCodeUnit);
+	}
+
+	string toString()
+	{
+		import std.format;
+
+		return format("%s\t%s\t%s", identifier, filename, lineNumber);
+	}
+}
+
+alias TagSink = extern(C++) void function(Tag, void*);
 
 void writeTag(TagSink sink, void* context, Dsymbol sym)
 {
-	import std.format;
 	import dmd.root.string: toDString;
 
 	if (!sym.loc.isValid) return;
 	const(char)[] filename = sym.loc.filename.toDString;
 	if (!filename) return;
-	string tag = format("%s\t%s\t%s", sym.ident.toString, filename, sym.loc.linnum);
-	sink(tag.ptr, tag.length, context);
+	auto tag = Tag(sym.ident.toString, filename, sym.loc.linnum);
+	sink(tag, context);
 }
 
 void writeTag(TagSink sink, void* context, Module m)
 {
-	import std.format;
-
 	if (!m.srcfile.name) return;
 	size_t line = m.md ? m.md.loc.linnum : 1;
-	string tag = format("%s\t%s\t%s", m.ident.toString, m.srcfile.toString, line);
-	sink(tag.ptr, tag.length, context);
+	auto tag = Tag(m.ident.toString, m.srcfile.toString, line);
+	sink(tag, context);
 }
 
 alias TaggableSymbols = AliasSeq!(
