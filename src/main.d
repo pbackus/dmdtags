@@ -16,7 +16,7 @@ void printUsage()
 {
 	import std.stdio: stderr, writeln;
 
-	stderr.writeln("Usage: dmdtags [-R] [path...]");
+	stderr.writeln("Usage: dmdtags [-R] [-f|-o tagfile] [path...]");
 }
 
 void tryMain(string[] args)
