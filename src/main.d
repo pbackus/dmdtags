@@ -29,12 +29,15 @@ void tryMain(string[] args)
 	import std.array: appender;
 	import std.algorithm: sort, each;
 	import std.getopt: getopt;
-	import std.stdio: writeln;
+	import std.stdio: File, stdout;
 	import std.file: isDir, isFile, dirEntries, SpanMode;
 
 	bool recurse;
+	string tagfile = "tags";
+
 	auto result = args.getopt(
-		"recurse|R", &recurse
+		"recurse|R", &recurse,
+		"f|o", &tagfile,
 	);
 
 	if (result.helpWanted) {
@@ -84,6 +87,14 @@ void tryMain(string[] args)
 	}
 
 	sort(tags[]);
-	writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
-	tags[].each!writeln;
+
+	File output;
+	if (tagfile == "-") {
+		output = stdout;
+	} else {
+		output = File(tagfile, "w");
+	}
+
+	output.writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
+	tags[].each!((tag) { output.writeln(tag); });
 }
