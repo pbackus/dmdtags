@@ -17,7 +17,7 @@ import dmd.visitor: Visitor, SemanticTimeTransitiveVisitor;
 
 import std.meta: AliasSeq;
 
-void writeTag(ref Appender!Tag sink, Dsymbol sym)
+void putTag(ref Appender!Tag sink, Dsymbol sym)
 {
 	import dmd.root.string: toDString;
 	import std.range: put;
@@ -29,7 +29,7 @@ void writeTag(ref Appender!Tag sink, Dsymbol sym)
 	put(sink, tag);
 }
 
-void writeTag(ref Appender!Tag sink, Module m)
+void putTag(ref Appender!Tag sink, Module m)
 {
 	import std.range: put;
 
@@ -81,7 +81,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	static foreach (Symbol; TaggableSymbols) {
 		override void visit(Symbol sym)
 		{
-			writeTag(*sink, sym);
+			putTag(*sink, sym);
 			static if (is(Symbol : ScopeDsymbol))
 				visitMembers(sym);
 		}
