@@ -1,4 +1,4 @@
-module main;
+module dmdtags.main;
 
 int main(string[] args)
 {
@@ -21,8 +21,8 @@ void printUsage()
 
 void tryMain(string[] args)
 {
-	import generate: SymbolTagger;
-	import tag: Tag;
+	import dmdtags.generate: SymbolTagger;
+	import dmdtags.tag: Tag;
 
 	import dmd.frontend: initDMD, parseModule;
 

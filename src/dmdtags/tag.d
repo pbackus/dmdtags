@@ -1,4 +1,4 @@
-module tag;
+module dmdtags.tag;
 
 enum Kind : char
 {

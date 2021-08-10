@@ -1,6 +1,6 @@
-module generate;
+module dmdtags.generate;
 
-import tag: Tag, Kind;
+import dmdtags.tag: Tag, Kind;
 
 import dmd.declaration: AliasDeclaration, VarDeclaration;
 import dmd.func: FuncDeclaration;
