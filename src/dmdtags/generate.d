@@ -1,6 +1,7 @@
 module dmdtags.generate;
 
 import dmdtags.tag: Tag, Kind;
+import dmdtags.appender: Appender;
 
 import dmd.declaration: AliasDeclaration, VarDeclaration;
 import dmd.func: FuncDeclaration;
@@ -16,25 +17,26 @@ import dmd.visitor: Visitor, SemanticTimeTransitiveVisitor;
 
 import std.meta: AliasSeq;
 
-alias TagSink = extern(C++) void function(Tag, void*);
-
-void writeTag(TagSink sink, void* context, Dsymbol sym)
+void writeTag(ref Appender!Tag sink, Dsymbol sym)
 {
 	import dmd.root.string: toDString;
+	import std.range: put;
 
 	if (!sym.loc.isValid) return;
 	const(char)[] filename = sym.loc.filename.toDString;
 	if (!filename) return;
 	auto tag = Tag(sym.ident.toString, filename, sym.loc.linnum, sym.tagKind);
-	sink(tag, context);
+	put(sink, tag);
 }
 
-void writeTag(TagSink sink, void* context, Module m)
+void writeTag(ref Appender!Tag sink, Module m)
 {
+	import std.range: put;
+
 	if (!m.srcfile.name) return;
 	size_t line = m.md ? m.md.loc.linnum : 1;
 	auto tag = Tag(m.ident.toString, m.srcfile.toString, line, m.tagKind);
-	sink(tag, context);
+	put(sink, tag);
 }
 
 alias TaggableSymbols = AliasSeq!(
@@ -57,13 +59,11 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 {
 	import dmd.dsymbol: ScopeDsymbol;
 
-	private void* context;
-	private TagSink sink;
+	private Appender!Tag* sink;
 
-	this(TagSink sink, void* context)
+	this(ref Appender!Tag sink)
 	{
-		this.sink = sink;
-		this.context = context;
+		this.sink = &sink;
 	}
 
 	alias visit = typeof(super).visit;
@@ -81,7 +81,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	static foreach (Symbol; TaggableSymbols) {
 		override void visit(Symbol sym)
 		{
-			writeTag(sink, context, sym);
+			writeTag(*sink, sym);
 			static if (is(Symbol : ScopeDsymbol))
 				visitMembers(sym);
 		}

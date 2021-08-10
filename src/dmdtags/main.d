@@ -23,10 +23,10 @@ void tryMain(string[] args)
 {
 	import dmdtags.generate: SymbolTagger;
 	import dmdtags.tag: Tag;
+	import dmdtags.appender: Appender;
 
 	import dmd.frontend: initDMD, parseModule;
 
-	import std.array: appender;
 	import std.algorithm: sort, each;
 	import std.getopt: getopt;
 	import std.stdio: File, stdout;
@@ -56,17 +56,9 @@ void tryMain(string[] args)
 	}
 
 	initDMD();
-	auto tags = appender!(Tag[]);
 
-	static extern(C++)
-	void sinkFn(Tag tag, void* context)
-	{
-		import std.range: put;
-
-		put(*cast(typeof(tags)*) context, tag);
-	}
-
-	scope tagger = new SymbolTagger(&sinkFn, &tags);
+	Appender!Tag tags;
+	scope tagger = new SymbolTagger(tags);
 
 	void processSourceFile(string path)
 	{
