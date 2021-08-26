@@ -39,6 +39,28 @@ struct Span(T)
 		assert(start <= end && end <= length);
 		return ptr[start .. end];
 	}
+
+	int opCmp(const Span rhs) const
+	{
+		import std.algorithm.comparison: cmp;
+
+		return this[].cmp(rhs[]);
+	}
+
+	// qual(Span!T) -> Span!(qual(T))
+	auto headMutable(this This)()
+	{
+		import std.traits: CopyTypeQualifiers;
+
+		return Span!(CopyTypeQualifiers!(This, T))(this[]);
+	}
+
+	void toString(Sink)(ref Sink sink)
+	{
+		import std.algorithm.mutation: copy;
+
+		copy(this[], sink);
+	}
 }
 
 inout(Span!T) span(T)(inout(T)[] slice)

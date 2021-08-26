@@ -22,8 +22,8 @@ void printUsage()
 void tryMain(string[] args)
 {
 	import dmdtags.generate: SymbolTagger;
-	import dmdtags.tag: Tag;
 	import dmdtags.appender: Appender;
+	import dmdtags.span: Span;
 
 	import dmd.frontend: initDMD, parseModule;
 
@@ -57,7 +57,7 @@ void tryMain(string[] args)
 
 	initDMD();
 
-	Appender!Tag tags;
+	Appender!(Span!(const(char))) tags;
 	scope tagger = new SymbolTagger(tags);
 
 	void processSourceFile(string path)
@@ -88,5 +88,5 @@ void tryMain(string[] args)
 	}
 
 	output.writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
-	tags[].each!((tag) { output.writeln(tag); });
+	tags[].each!((tag) { output.writeln(tag[]); });
 }
