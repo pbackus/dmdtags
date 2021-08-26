@@ -40,6 +40,11 @@ struct Span(T)
 		return ptr[start .. end];
 	}
 
+	bool opEquals(const Span rhs) const
+	{
+		return this[] == rhs[];
+	}
+
 	int opCmp(const Span rhs) const
 	{
 		import std.algorithm.comparison: cmp;

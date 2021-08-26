@@ -16,28 +16,30 @@ void printUsage()
 {
 	import std.stdio: stderr, writeln;
 
-	stderr.writeln("Usage: dmdtags [-R] [-f|-o tagfile] [path...]");
+	stderr.writeln("Usage: dmdtags [-R] [-a] [-f|-o tagfile] [path...]");
 }
 
 void tryMain(string[] args)
 {
 	import dmdtags.generate: SymbolTagger;
 	import dmdtags.appender: Appender;
-	import dmdtags.span: Span;
+	import dmdtags.span;
 
 	import dmd.frontend: initDMD, parseModule;
 
-	import std.algorithm: sort, each;
+	import std.algorithm: sort, uniq, each;
 	import std.getopt: getopt;
 	import std.stdio: File, stdout;
-	import std.file: isDir, isFile, dirEntries, SpanMode;
+	import std.file: exists, isDir, isFile, dirEntries, SpanMode;
 
 	bool recurse;
 	string tagfile = "tags";
+	bool append;
 
 	auto result = args.getopt(
 		"recurse|R", &recurse,
 		"f|o", &tagfile,
+		"append|a", &append,
 	);
 
 	if (result.helpWanted) {
@@ -78,6 +80,16 @@ void tryMain(string[] args)
 		}
 	}
 
+	if (append && tagfile.exists) {
+		import std.algorithm: filter, startsWith, map, copy;
+
+		File(tagfile, "r")
+			.byLineCopy
+			.filter!(line => !line.startsWith("!_TAG_"))
+			.map!((const(char)[] line) => line.span.headMutable)
+			.copy(tags);
+	}
+
 	sort(tags[]);
 
 	File output;
@@ -88,5 +100,5 @@ void tryMain(string[] args)
 	}
 
 	output.writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
-	tags[].each!((tag) { output.writeln(tag[]); });
+	tags[].uniq.each!((tag) { output.writeln(tag); });
 }
