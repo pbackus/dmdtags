@@ -18,7 +18,7 @@ import dmd.visitor: Visitor, SemanticTimeTransitiveVisitor;
 
 import std.meta: AliasSeq;
 
-void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym)
+void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, bool isPrivate)
 {
 	import dmd.root.string: toDString;
 	import std.range: put;
@@ -31,10 +31,13 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym)
 		"%s\t%s\t%s;\"\t%s",
 		sym.ident.toString, filename, sym.loc.linnum, cast(char) sym.tagKind
 	);
+	if (isPrivate) {
+		tag ~= "\tfile:";
+	}
 	put(sink, tag.span.headMutable);
 }
 
-void putTag(ref Appender!(Span!(const(char))) sink, Module m)
+void putTag(ref Appender!(Span!(const(char))) sink, Module m, bool isPrivate)
 {
 	import std.range: put;
 	import std.format: format;
@@ -67,8 +70,10 @@ alias TaggableSymbols = AliasSeq!(
 extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 {
 	import dmd.dsymbol: ScopeDsymbol;
+	import dmd.attrib: VisibilityDeclaration;
 
 	private Appender!(Span!(const(char)))* sink;
+	private VisibilityDeclaration vd;
 
 	this(ref Appender!(Span!(const(char))) sink)
 	{
@@ -87,10 +92,33 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 		}
 	}
 
+	/* Visibility information is not available via Dsymbol.visible prior to
+	 * semantic analysis, so we have to keep track of visibility attributes
+	 * while walking the parse tree.
+	 */
+	override void visit(VisibilityDeclaration innerVd)
+	{
+		auto outerVd = vd;
+		vd = innerVd;
+
+		if (vd.decl) {
+			foreach (d; *vd.decl) {
+				if (d)
+					d.accept(this);
+			}
+		}
+
+		vd = outerVd;
+	}
+
 	static foreach (Symbol; TaggableSymbols) {
 		override void visit(Symbol sym)
 		{
-			putTag(*sink, sym);
+			import dmd.dsymbol: Visibility;
+
+			bool isPrivate = vd && vd.visibility.kind == Visibility.Kind.private_;
+			putTag(*sink, sym, isPrivate);
+
 			static if (is(Symbol : ScopeDsymbol))
 				visitMembers(sym);
 		}
