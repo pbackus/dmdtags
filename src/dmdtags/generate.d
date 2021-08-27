@@ -25,15 +25,19 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, bool isPrivate)
 	import std.format: format;
 
 	if (!sym.loc.isValid) return;
+
 	const(char)[] filename = sym.loc.filename.toDString;
 	if (!filename) return;
+
 	const(char)[] tag = format(
 		"%s\t%s\t%s;\"\t%s",
 		sym.ident.toString, filename, sym.loc.linnum, cast(char) sym.tagKind
 	);
+
 	if (isPrivate) {
 		tag ~= "\tfile:";
 	}
+
 	put(sink, tag.span.headMutable);
 }
 
@@ -43,11 +47,13 @@ void putTag(ref Appender!(Span!(const(char))) sink, Module m, bool isPrivate)
 	import std.format: format;
 
 	if (!m.srcfile.name) return;
+
 	size_t line = m.md ? m.md.loc.linnum : 1;
 	const(char)[] tag = format(
 		"%s\t%s\t%s;\"\t%s",
 		m.ident.toString, m.srcfile.toString, line, cast(char) m.tagKind
 	);
+
 	put(sink, tag.span.headMutable);
 }
 
@@ -86,8 +92,9 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	{
 		if (s.members) {
 			foreach (m; *s.members) {
-				if (m)
+				if (m) {
 					m.accept(this);
+				}
 			}
 		}
 	}
@@ -103,8 +110,9 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 
 		if (vd.decl) {
 			foreach (d; *vd.decl) {
-				if (d)
+				if (d) {
 					d.accept(this);
+				}
 			}
 		}
 

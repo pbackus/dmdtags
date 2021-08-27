@@ -102,5 +102,5 @@ void tryMain(string[] args)
 	}
 
 	output.writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
-	tags[].uniq.each!((tag) { output.writeln(tag); });
+	tags[].uniq.each!(tag => output.writeln(tag));
 }
