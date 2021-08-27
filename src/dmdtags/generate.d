@@ -25,6 +25,7 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, bool isPrivate)
 	import std.format: format;
 
 	if (!sym.loc.isValid) return;
+	if (!sym.ident) return;
 
 	const(char)[] filename = sym.loc.filename.toDString;
 	if (!filename) return;
