@@ -76,7 +76,7 @@ alias TaggableSymbols = AliasSeq!(
 
 extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 {
-	import dmd.dsymbol: ScopeDsymbol;
+	import dmd.dsymbol: ScopeDsymbol, foreachDsymbol;
 	import dmd.attrib: VisibilityDeclaration;
 
 	private Appender!(Span!(const(char)))* sink;
@@ -91,13 +91,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 
 	void visitMembers(ScopeDsymbol s)
 	{
-		if (s.members) {
-			foreach (m; *s.members) {
-				if (m) {
-					m.accept(this);
-				}
-			}
-		}
+		s.members.foreachDsymbol((m) { if (m) m.accept(this); });
 	}
 
 	/* Visibility information is not available via Dsymbol.visible prior to
@@ -109,13 +103,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 		auto outerVd = vd;
 		vd = innerVd;
 
-		if (vd.decl) {
-			foreach (d; *vd.decl) {
-				if (d) {
-					d.accept(this);
-				}
-			}
-		}
+		vd.decl.foreachDsymbol((d) { if (d) d.accept(this); });
 
 		vd = outerVd;
 	}
