@@ -27,6 +27,7 @@ void tryMain(string[] args)
 
 	import dmd.frontend: initDMD, parseModule;
 	import dmd.errors: DiagnosticHandler;
+	import dmd.globals: global;
 
 	import std.algorithm: sort, uniq, each;
 	import std.getopt: getopt;
@@ -60,6 +61,7 @@ void tryMain(string[] args)
 
 	DiagnosticHandler ignoreErrors = (ref _1, _2, _3, _4, _5, _6, _7) => true;
 	initDMD(ignoreErrors);
+	global.params.errorLimit = 0; // no limit
 
 	Appender!(Span!(const(char))) tags;
 	scope tagger = new SymbolTagger(tags);
