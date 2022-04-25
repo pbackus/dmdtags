@@ -81,7 +81,5 @@ unittest {
 	assert(span.ptr == arr.ptr);
 	assert(span[0] == 1);
 	assert(span[] == arr);
-	import std.stdio;
-	debug writeln(span[1 .. $]);
 	assert(span[1 .. $] == arr[1 .. $]);
 }
