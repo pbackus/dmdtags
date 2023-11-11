@@ -23,4 +23,12 @@ struct Fields
 {
 	// tag is visible only in current file
 	bool file;
+
+	string toString()
+	{
+		string result;
+		if (file)
+			result ~= "\tfile:";
+		return result;
+	}
 }

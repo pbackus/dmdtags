@@ -31,13 +31,10 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, Fields fields)
 	if (!filename) return;
 
 	const(char)[] tag = format(
-		"%s\t%s\t%s;\"\t%s",
-		sym.ident.toString, filename, sym.loc.linnum, cast(char) sym.tagKind
+		"%s\t%s\t%s;\"\t%s%s",
+		sym.ident.toString, filename, sym.loc.linnum, cast(char) sym.tagKind,
+		fields
 	);
-
-	if (fields.file) {
-		tag ~= "\tfile:";
-	}
 
 	put(sink, tag.span.headMutable);
 }
