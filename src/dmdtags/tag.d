@@ -21,12 +21,16 @@ enum Kind : char
 
 struct Fields
 {
+	Kind kind;
+
 	// tag is visible only in current file
 	bool file;
 
 	string toString()
 	{
 		string result;
+		result ~= "\t";
+		result ~= cast(char) kind;
 		if (file)
 			result ~= "\tfile:";
 		return result;

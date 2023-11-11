@@ -31,9 +31,8 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, Fields fields)
 	if (!filename) return;
 
 	const(char)[] tag = format(
-		"%s\t%s\t%s;\"\t%s%s",
-		sym.ident.toString, filename, sym.loc.linnum, cast(char) sym.tagKind,
-		fields
+		"%s\t%s\t%s;\"%s",
+		sym.ident.toString, filename, sym.loc.linnum, fields
 	);
 
 	put(sink, tag.span.headMutable);
@@ -48,8 +47,8 @@ void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
 
 	size_t line = m.md ? m.md.loc.linnum : 1;
 	const(char)[] tag = format(
-		"%s\t%s\t%s;\"\t%s",
-		m.ident.toString, m.srcfile.toString, line, cast(char) m.tagKind
+		"%s\t%s\t%s;\"%s",
+		m.ident.toString, m.srcfile.toString, line, fields
 	);
 
 	put(sink, tag.span.headMutable);
@@ -110,6 +109,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 			import dmd.dsymbol: Visibility;
 
 			Fields fields;
+			fields.kind = sym.tagKind;
 			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
 			putTag(*sink, sym, fields);
 
