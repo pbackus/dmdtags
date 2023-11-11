@@ -13,3 +13,4 @@ dmdtags-test-*
 *.o
 *.obj
 *.lst
+test/*.actual
