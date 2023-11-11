@@ -1,6 +1,6 @@
 module dmdtags.generate;
 
-import dmdtags.tag: Kind;
+import dmdtags.tag;
 import dmdtags.appender: Appender;
 import dmdtags.span;
 
@@ -18,7 +18,7 @@ import dmd.visitor: Visitor, SemanticTimeTransitiveVisitor;
 
 import std.meta: AliasSeq;
 
-void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, bool isPrivate)
+void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, Fields fields)
 {
 	import dmd.root.string: toDString;
 	import std.range: put;
@@ -35,14 +35,14 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, bool isPrivate)
 		sym.ident.toString, filename, sym.loc.linnum, cast(char) sym.tagKind
 	);
 
-	if (isPrivate) {
+	if (fields.file) {
 		tag ~= "\tfile:";
 	}
 
 	put(sink, tag.span.headMutable);
 }
 
-void putTag(ref Appender!(Span!(const(char))) sink, Module m, bool isPrivate)
+void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
 {
 	import std.range: put;
 	import std.format: format;
@@ -112,8 +112,9 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 		{
 			import dmd.dsymbol: Visibility;
 
-			bool isPrivate = vd && vd.visibility.kind == Visibility.Kind.private_;
-			putTag(*sink, sym, isPrivate);
+			Fields fields;
+			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
+			putTag(*sink, sym, fields);
 
 			static if (is(Symbol : ScopeDsymbol))
 				visitMembers(sym);

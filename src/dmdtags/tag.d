@@ -18,3 +18,9 @@ enum Kind : char
 	variable   = 'v', // variable definitions
 	version_   = 'V', // version statements
 }
+
+struct Fields
+{
+	// tag is visible only in current file
+	bool file;
+}
