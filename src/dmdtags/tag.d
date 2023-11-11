@@ -23,16 +23,37 @@ struct Fields
 {
 	Kind kind;
 
+	Scope scope_;
+
 	// tag is visible only in current file
 	bool file;
 
 	string toString()
 	{
+		import std.string: chomp;
+		import std.conv: to;
+
 		string result;
+
 		result ~= "\t";
 		result ~= cast(char) kind;
+
+		if (scope_.kind != Kind.unknown) {
+			result ~= "\t";
+			result ~= scope_.kind.to!string.chomp("_");
+			result ~= ":";
+			result ~= scope_.identifier;
+		}
+
 		if (file)
 			result ~= "\tfile:";
+
 		return result;
 	}
+}
+
+struct Scope
+{
+	Kind kind;
+	const(char)[] identifier;
 }

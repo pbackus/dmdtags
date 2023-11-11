@@ -54,17 +54,21 @@ void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
 	put(sink, tag.span.headMutable);
 }
 
+alias UserDefinedTypes = AliasSeq!(
+	StructDeclaration,
+	UnionDeclaration,
+	ClassDeclaration,
+	InterfaceDeclaration,
+	EnumDeclaration,
+);
+
 alias TaggableSymbols = AliasSeq!(
 	AliasDeclaration,
 	VarDeclaration,
 	FuncDeclaration,
 	EnumMember,
 	VersionSymbol,
-	StructDeclaration,
-	// UnionDeclaration
-	ClassDeclaration,
-	// InterfaceDeclaration
-	EnumDeclaration,
+	UserDefinedTypes,
 	TemplateDeclaration,
 	Nspace,
 	Module
@@ -77,6 +81,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 
 	private Appender!(Span!(const(char)))* sink;
 	private VisibilityDeclaration vd;
+	private ScopeDsymbol parentType;
 
 	this(ref Appender!(Span!(const(char))) sink)
 	{
@@ -107,11 +112,21 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 		override void visit(Symbol sym)
 		{
 			import dmd.dsymbol: Visibility;
+			import std.meta: IndexOf = staticIndexOf;
 
 			Fields fields;
 			fields.kind = sym.tagKind;
+			if (parentType)
+				fields.scope_ = Scope(parentType.tagKind, parentType.ident.toString);
 			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
+
 			putTag(*sink, sym, fields);
+
+			static if (IndexOf!(Symbol, UserDefinedTypes) >= 0) {
+				auto outerParentType = parentType;
+				scope(exit) parentType = outerParentType;
+				parentType = sym;
+			}
 
 			static if (is(Symbol : ScopeDsymbol))
 				visitMembers(sym);
