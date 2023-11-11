@@ -1,0 +1,5 @@
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+S	test/anonymous.d	6;"	s
+anonymous	test/anonymous.d	1;"	M
+x	test/anonymous.d	3;"	e
+y	test/anonymous.d	10;"	e	struct:S

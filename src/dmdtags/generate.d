@@ -125,7 +125,8 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 			static if (IndexOf!(Symbol, UserDefinedTypes) >= 0) {
 				auto outerParentType = parentType;
 				scope(exit) parentType = outerParentType;
-				parentType = sym;
+				if (sym.ident)
+					parentType = sym;
 			}
 
 			static if (is(Symbol : ScopeDsymbol))
