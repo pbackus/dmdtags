@@ -19,7 +19,7 @@ struct Appender(T)
 
 	private static size_t allocSize(size_t capacity)
 	{
-		import std.experimental.checkedint: checked;
+		import std.checkedint: checked;
 
 		return (Header.sizeof + T.sizeof.checked * capacity).get;
 	}
@@ -40,7 +40,7 @@ struct Appender(T)
 
 	void put(T item)
 	{
-		import std.experimental.checkedint: checked;
+		import std.checkedint: checked;
 
 		if (header is null) {
 			header = cast(Header*) GC.malloc(allocSize(initialCapacity));
