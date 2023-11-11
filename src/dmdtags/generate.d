@@ -115,9 +115,9 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 			import std.meta: IndexOf = staticIndexOf;
 
 			Fields fields;
-			fields.kind = sym.tagKind;
+			fields.kind = sym.toKind;
 			if (parentType)
-				fields.scope_ = Scope(parentType.tagKind, parentType.ident.toString);
+				fields.scope_ = Scope(parentType.toKind, parentType.ident.toString);
 			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
 
 			putTag(*sink, sym, fields);
@@ -134,7 +134,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	}
 }
 
-Kind tagKind(Dsymbol sym)
+Kind toKind(Dsymbol sym)
 {
 	static extern(C++) class SymbolKindVisitor : Visitor
 	{
