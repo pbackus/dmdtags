@@ -101,11 +101,10 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	override void visit(VisibilityDeclaration innerVd)
 	{
 		auto outerVd = vd;
+		scope(exit) vd = outerVd;
+
 		vd = innerVd;
-
 		vd.decl.foreachDsymbol((d) { if (d) d.accept(this); });
-
-		vd = outerVd;
 	}
 
 	static foreach (Symbol; TaggableSymbols) {
