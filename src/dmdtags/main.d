@@ -61,7 +61,10 @@ void tryMain(string[] args)
 
 	DiagnosticHandler ignoreErrors = (ref _1, _2, _3, _4, _5, _6, _7) => true;
 	initDMD(ignoreErrors);
-	global.params.v.errorLimit = 0; // no limit
+	static if (__VERSION__ < 2106)
+		global.params.errorLimit = 0;
+	else
+		global.params.v.errorLimit = 0; // no limit
 
 	Appender!(Span!(const(char))) tags;
 	scope tagger = new SymbolTagger(tags);

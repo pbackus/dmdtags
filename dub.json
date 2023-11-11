@@ -4,7 +4,7 @@
 	],
 	"copyright": "Copyright © 2021, Paul Backus",
 	"dependencies": {
-		"dmd:frontend": "~master"
+		"dmd:frontend": "~>2.105"
 	},
 	"description": "A tag file generator for D source code",
 	"license": "GPL-3.0 or later",
