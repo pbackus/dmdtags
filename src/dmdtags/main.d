@@ -59,12 +59,15 @@ void tryMain(string[] args)
 		return;
 	}
 
+	// Ignore all parsing errors and keep going
 	DiagnosticHandler ignoreErrors = (ref _1, _2, _3, _4, _5, _6, _7) => true;
 	initDMD(ignoreErrors);
-	static if (__VERSION__ < 2106)
+	static if (__traits(hasMember, global.params, "errorLimit"))
+		// Up to DMD 2.105.3
 		global.params.errorLimit = 0;
 	else
-		global.params.v.errorLimit = 0; // no limit
+		// Since DMD 2.106.0
+		global.params.v.errorLimit = 0;
 
 	Appender!(Span!(const(char))) tags;
 	scope tagger = new SymbolTagger(tags);
