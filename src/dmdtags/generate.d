@@ -54,7 +54,9 @@ void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
 	put(sink, tag.span.headMutable);
 }
 
-alias UserDefinedTypes = AliasSeq!(
+// Members of the symbols are tagged with
+// their parent in the "scope" field.
+alias TaggableParentSymbols = AliasSeq!(
 	StructDeclaration,
 	UnionDeclaration,
 	ClassDeclaration,
@@ -68,7 +70,7 @@ alias TaggableSymbols = AliasSeq!(
 	FuncDeclaration,
 	EnumMember,
 	VersionSymbol,
-	UserDefinedTypes,
+	TaggableParentSymbols,
 	TemplateDeclaration,
 	Nspace,
 	Module
@@ -81,7 +83,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 
 	private Appender!(Span!(const(char)))* sink;
 	private VisibilityDeclaration vd;
-	private ScopeDsymbol parentType;
+	private ScopeDsymbol parentSym;
 
 	this(ref Appender!(Span!(const(char))) sink)
 	{
@@ -116,19 +118,19 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 
 			Fields fields;
 			fields.kind = sym.toKind;
-			if (parentType)
-				fields.scope_ = Scope(parentType.toKind, parentType.ident.toString);
+			if (parentSym)
+				fields.scope_ = Scope(parentSym.toKind, parentSym.ident.toString);
 			static if (is(Symbol == FuncDeclaration))
 				fields.signature = sym.formatSignature;
 			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
 
 			putTag(*sink, sym, fields);
 
-			static if (IndexOf!(Symbol, UserDefinedTypes) >= 0) {
-				auto outerParentType = parentType;
-				scope(exit) parentType = outerParentType;
+			static if (IndexOf!(Symbol, TaggableParentSymbols) >= 0) {
+				auto outerParentSym = parentSym;
+				scope(exit) parentSym = outerParentSym;
 				if (sym.ident)
-					parentType = sym;
+					parentSym = sym;
 			}
 
 			static if (is(Symbol : ScopeDsymbol))
