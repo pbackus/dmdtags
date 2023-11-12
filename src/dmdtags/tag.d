@@ -25,6 +25,9 @@ struct Fields
 
 	Scope scope_;
 
+	// function parameters
+	const(char)[] signature;
+
 	// tag is visible only in current file
 	bool file;
 
@@ -43,6 +46,11 @@ struct Fields
 			result ~= scope_.kind.to!string.chomp("_");
 			result ~= ":";
 			result ~= scope_.identifier;
+		}
+
+		if (signature) {
+			result ~= "\tsignature:";
+			result ~= signature;
 		}
 
 		if (file)

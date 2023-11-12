@@ -9,16 +9,16 @@ bar	test/test.d	41;"	v
 c	test/test.d	17;"	v	struct:S
 enumMember	test/test.d	25;"	e	enum:E
 eponymous	test/test.d	44;"	T
-eponymous	test/test.d	44;"	f
+eponymous	test/test.d	44;"	f	signature:(T t)
 eponymousWithExtra	test/test.d	61;"	T
 eponymousWithExtra	test/test.d	63;"	v
 foo	test/test.d	40;"	v
-fun	test/test.d	28;"	f
+fun	test/test.d	28;"	f	signature:()
 hidden	test/test.d	64;"	v
-method	test/test.d	20;"	f	struct:S
+method	test/test.d	20;"	f	struct:S	signature:()
 overloaded	test/test.d	46;"	T
-overloaded	test/test.d	48;"	f
-overloaded	test/test.d	49;"	f
+overloaded	test/test.d	48;"	f	signature:(int)
+overloaded	test/test.d	49;"	f	signature:(double)
 privateMember	test/test.d	58;"	v	struct:PrivateStruct	file:
 privateVar	test/test.d	54;"	v	file:
 stuff	test/test.d	36;"	v
