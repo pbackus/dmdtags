@@ -22,7 +22,7 @@ void printUsage()
 void tryMain(string[] args)
 {
 	import dmdtags.generate: SymbolTagger;
-	import dmdtags.appender: Appender;
+	import dmdtags.appender;
 	import dmdtags.span;
 
 	import dmd.frontend: initDMD, parseModule;

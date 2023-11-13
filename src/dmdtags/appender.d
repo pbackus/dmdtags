@@ -2,8 +2,8 @@ module dmdtags.appender;
 
 import core.memory: GC;
 
-enum initialCapacity = 16;
-enum growFactor = 2;
+private enum initialCapacity = 16;
+private enum growFactor = 2;
 
 // Simple extern(C++)-compatible Appender
 struct Appender(T)

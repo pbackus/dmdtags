@@ -1,7 +1,7 @@
 module dmdtags.generate;
 
 import dmdtags.tag;
-import dmdtags.appender: Appender;
+import dmdtags.appender;
 import dmdtags.span;
 
 import dmd.declaration: AliasDeclaration, VarDeclaration;
