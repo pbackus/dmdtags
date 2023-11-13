@@ -121,7 +121,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 			if (parentSym)
 				fields.scope_ = Scope(parentSym.toKind, parentSym.ident.toString);
 			static if (is(Symbol == FuncDeclaration))
-				fields.signature = sym.formatSignature;
+				fields.signature = sym.paramsToString;
 			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
 
 			putTag(*sink, sym, fields);
@@ -221,7 +221,7 @@ Kind toKind(Dsymbol sym)
 	return v.result;
 }
 
-const(char)[] formatSignature(FuncDeclaration fd)
+const(char)[] paramsToString(FuncDeclaration fd)
 {
 	import dmd.hdrgen: parametersTypeToChars;
 	import std.string: fromStringz;
