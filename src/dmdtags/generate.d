@@ -54,7 +54,7 @@ void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
 	put(sink, tag.span.headMutable);
 }
 
-// Members of the symbols are tagged with
+// Members of these symbols are tagged with
 // their parent in the "scope" field.
 alias TaggableParentSymbols = AliasSeq!(
 	StructDeclaration,
