@@ -12,13 +12,6 @@ int main(string[] args)
 	return 0;
 }
 
-void printUsage()
-{
-	import std.stdio: stderr, writeln;
-
-	stderr.writeln("Usage: dmdtags [-R] [-a] [-f|-o tagfile] [path...]");
-}
-
 void tryMain(string[] args)
 {
 	import dmdtags.generate: SymbolTagger;
@@ -110,4 +103,11 @@ void tryMain(string[] args)
 
 	output.writeln("!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/");
 	tags[].uniq.each!(tag => output.writeln(tag));
+}
+
+void printUsage()
+{
+	import std.stdio: stderr, writeln;
+
+	stderr.writeln("Usage: dmdtags [-R] [-a] [-f|-o tagfile] [path...]");
 }

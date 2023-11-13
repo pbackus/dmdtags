@@ -17,41 +17,16 @@ import dmd.visitor: Visitor, SemanticTimeTransitiveVisitor;
 import std.array: Appender;
 import std.meta: AliasSeq;
 
-void putTag(ref Appender!(const(char)[][]) sink, Dsymbol sym, Fields fields)
-{
-	import dmd.root.string: toDString;
-	import std.range: put;
-	import std.format: format;
-
-	if (!sym.loc.isValid) return;
-	if (!sym.ident) return;
-
-	const(char)[] filename = sym.loc.filename.toDString;
-	if (!filename) return;
-
-	const(char)[] tag = format(
-		"%s\t%s\t%s;\"%s",
-		sym.ident.toString, filename, sym.loc.linnum, fields
-	);
-
-	put(sink, tag);
-}
-
-void putTag(ref Appender!(const(char)[][]) sink, Module m, Fields fields)
-{
-	import std.range: put;
-	import std.format: format;
-
-	if (!m.srcfile.name) return;
-
-	size_t line = m.md ? m.md.loc.linnum : 1;
-	const(char)[] tag = format(
-		"%s\t%s\t%s;\"%s",
-		m.ident.toString, m.srcfile.toString, line, fields
-	);
-
-	put(sink, tag);
-}
+alias TaggableSymbols = AliasSeq!(
+	AliasDeclaration,
+	VarDeclaration,
+	FuncDeclaration,
+	EnumMember,
+	VersionSymbol,
+	TaggableParentSymbols,
+	Nspace,
+	Module
+);
 
 // Members of these symbols are tagged with
 // their parent in the "scope" field.
@@ -62,17 +37,6 @@ alias TaggableParentSymbols = AliasSeq!(
 	InterfaceDeclaration,
 	EnumDeclaration,
 	TemplateDeclaration,
-);
-
-alias TaggableSymbols = AliasSeq!(
-	AliasDeclaration,
-	VarDeclaration,
-	FuncDeclaration,
-	EnumMember,
-	VersionSymbol,
-	TaggableParentSymbols,
-	Nspace,
-	Module
 );
 
 class SymbolTagger : SemanticTimeTransitiveVisitor
@@ -241,4 +205,40 @@ const(char)[] baseClassesToString(ClassDeclaration cd)
 	}
 
 	return buf.extractSlice;
+}
+
+void putTag(ref Appender!(const(char)[][]) sink, Dsymbol sym, Fields fields)
+{
+	import dmd.root.string: toDString;
+	import std.range: put;
+	import std.format: format;
+
+	if (!sym.loc.isValid) return;
+	if (!sym.ident) return;
+
+	const(char)[] filename = sym.loc.filename.toDString;
+	if (!filename) return;
+
+	const(char)[] tag = format(
+		"%s\t%s\t%s;\"%s",
+		sym.ident.toString, filename, sym.loc.linnum, fields
+	);
+
+	put(sink, tag);
+}
+
+void putTag(ref Appender!(const(char)[][]) sink, Module m, Fields fields)
+{
+	import std.range: put;
+	import std.format: format;
+
+	if (!m.srcfile.name) return;
+
+	size_t line = m.md ? m.md.loc.linnum : 1;
+	const(char)[] tag = format(
+		"%s\t%s\t%s;\"%s",
+		m.ident.toString, m.srcfile.toString, line, fields
+	);
+
+	put(sink, tag);
 }

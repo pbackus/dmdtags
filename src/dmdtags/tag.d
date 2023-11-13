@@ -1,37 +1,20 @@
 module dmdtags.tag;
 
-enum Kind : char
-{
-	unknown    = ' ', // default
-	alias_     = 'a', // aliases
-	class_     = 'c', // classes
-	enum_      = 'g', // enumeration names
-	enumMember = 'e', // enumerators (values inside an enumeration)
-	function_  = 'f', // function definitions
-	interface_ = 'i', // interfaces
-	member     = 'm', // class, struct, and union members
-	module_    = 'M', // modules
-	namespace  = 'n', // namespaces
-	struct_    = 's', // structure names
-	template_  = 'T', // templates
-	union_     = 'u', // union names
-	variable   = 'v', // variable definitions
-	version_   = 'V', // version statements
-}
-
+// Fields for extended tags file format
 struct Fields
 {
 	Kind kind;
 
-	// base classes and interfaces
+	// Base classes and interfaces
 	const(char)[] inherits;
 
+	// Aggregate, enum, or template this tag is a member of
 	Scope scope_;
 
-	// function parameters
+	// Function or template parameters
 	const(char)[] signature;
 
-	// tag is visible only in current file
+	// This tag is visible only in the current file
 	bool file;
 
 	string toString()
@@ -66,6 +49,26 @@ struct Fields
 
 		return result;
 	}
+}
+
+// Based on ctags-universal --list-kinds=D
+enum Kind : char
+{
+	unknown    = ' ', // default
+	alias_     = 'a', // aliases
+	class_     = 'c', // classes
+	enum_      = 'g', // enumeration names
+	enumMember = 'e', // enumerators (values inside an enumeration)
+	function_  = 'f', // function definitions
+	interface_ = 'i', // interfaces
+	member     = 'm', // class, struct, and union members
+	module_    = 'M', // modules
+	namespace  = 'n', // namespaces
+	struct_    = 's', // structure names
+	template_  = 'T', // templates
+	union_     = 'u', // union names
+	variable   = 'v', // variable definitions
+	version_   = 'V', // version statements
 }
 
 struct Scope
