@@ -147,60 +147,17 @@ Kind toKind(Dsymbol sym)
 
 		alias visit = typeof(super).visit;
 
-		override void visit(AliasDeclaration)
-		{
-			result = Kind.alias_;
-		}
-
-		override void visit(ClassDeclaration)
-		{
-			result = Kind.class_;
-		}
-
-		override void visit(EnumDeclaration)
-		{
-			result = Kind.enum_;
-		}
-
-		override void visit(EnumMember)
-		{
-			result = Kind.enumMember;
-		}
-
-		override void visit(FuncDeclaration)
-		{
-			result = Kind.function_;
-		}
-
-		override void visit(InterfaceDeclaration)
-		{
-			result = Kind.interface_;
-		}
-
-		override void visit(Module)
-		{
-			result = Kind.module_;
-		}
-
-		override void visit(Nspace)
-		{
-			result = Kind.namespace;
-		}
-
-		override void visit(StructDeclaration)
-		{
-			result = Kind.struct_;
-		}
-
-		override void visit(TemplateDeclaration)
-		{
-			result = Kind.template_;
-		}
-
-		override void visit(UnionDeclaration)
-		{
-			result = Kind.union_;
-		}
+		override void visit(AliasDeclaration) { result = Kind.alias_; }
+		override void visit(ClassDeclaration) { result = Kind.class_; }
+		override void visit(EnumDeclaration) { result = Kind.enum_; }
+		override void visit(EnumMember) { result = Kind.enumMember; }
+		override void visit(FuncDeclaration) { result = Kind.function_; }
+		override void visit(InterfaceDeclaration) { result = Kind.interface_; }
+		override void visit(Module) { result = Kind.module_; }
+		override void visit(Nspace) { result = Kind.namespace; }
+		override void visit(StructDeclaration) { result = Kind.struct_; }
+		override void visit(TemplateDeclaration) { result = Kind.template_; }
+		override void visit(UnionDeclaration) { result = Kind.union_; }
 
 		override void visit(VarDeclaration vd)
 		{
@@ -210,10 +167,7 @@ Kind toKind(Dsymbol sym)
 				result = Kind.variable;
 		}
 
-		override void visit(VersionSymbol)
-		{
-			result = Kind.version_;
-		}
+		override void visit(VersionSymbol) { result = Kind.version_; }
 	}
 
 	scope v = new SymbolKindVisitor();
