@@ -10,5 +10,5 @@ fi
 for srcfile in test/*.d; do
 	base="${srcfile%.d}"
 	./dmdtags -o "${base}.actual" "$srcfile"
-	diff -q "${base}.expected" "${base}.actual"
+	diff -u --color "${base}.expected" "${base}.actual"
 done
