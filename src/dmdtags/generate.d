@@ -62,6 +62,7 @@ alias TaggableParentSymbols = AliasSeq!(
 	ClassDeclaration,
 	InterfaceDeclaration,
 	EnumDeclaration,
+	TemplateDeclaration,
 );
 
 alias TaggableSymbols = AliasSeq!(
@@ -71,7 +72,6 @@ alias TaggableSymbols = AliasSeq!(
 	EnumMember,
 	VersionSymbol,
 	TaggableParentSymbols,
-	TemplateDeclaration,
 	Nspace,
 	Module
 );

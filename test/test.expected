@@ -5,20 +5,20 @@ I	test/test.d	12;"	i	struct:S
 PrivateStruct	test/test.d	56;"	s	file:
 S	test/test.d	10;"	s
 ThreeInts	test/test.d	35;"	a
-bar	test/test.d	41;"	v
+bar	test/test.d	41;"	v	template:temp
 c	test/test.d	17;"	v	struct:S
 enumMember	test/test.d	25;"	e	enum:E
 eponymous	test/test.d	44;"	T
-eponymous	test/test.d	44;"	f	signature:(T t)
+eponymous	test/test.d	44;"	f	template:eponymous	signature:(T t)
 eponymousWithExtra	test/test.d	61;"	T
-eponymousWithExtra	test/test.d	63;"	v
-foo	test/test.d	40;"	v
+eponymousWithExtra	test/test.d	63;"	v	template:eponymousWithExtra
+foo	test/test.d	40;"	v	template:temp
 fun	test/test.d	28;"	f	signature:()
-hidden	test/test.d	64;"	v
+hidden	test/test.d	64;"	v	template:eponymousWithExtra
 method	test/test.d	20;"	f	struct:S	signature:()
 overloaded	test/test.d	46;"	T
-overloaded	test/test.d	48;"	f	signature:(int)
-overloaded	test/test.d	49;"	f	signature:(double)
+overloaded	test/test.d	48;"	f	template:overloaded	signature:(int)
+overloaded	test/test.d	49;"	f	template:overloaded	signature:(double)
 privateMember	test/test.d	58;"	v	struct:PrivateStruct	file:
 privateVar	test/test.d	54;"	v	file:
 stuff	test/test.d	36;"	v
