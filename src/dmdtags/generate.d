@@ -92,7 +92,7 @@ class SymbolTagger : SemanticTimeTransitiveVisitor
 
 	alias visit = typeof(super).visit;
 
-	void visitMembers(ScopeDsymbol s)
+	final void visitMembers(ScopeDsymbol s)
 	{
 		s.members.foreachDsymbol((m) { if (m) m.accept(this); });
 	}
