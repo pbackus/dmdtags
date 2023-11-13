@@ -22,14 +22,13 @@ void printUsage()
 void tryMain(string[] args)
 {
 	import dmdtags.generate: SymbolTagger;
-	import dmdtags.appender;
-	import dmdtags.span;
 
 	import dmd.frontend: initDMD, parseModule;
 	import dmd.errors: DiagnosticHandler;
 	import dmd.globals: global;
 
 	import std.algorithm: sort, uniq, each;
+	import std.array: Appender;
 	import std.getopt: getopt;
 	import std.stdio: File, stdout;
 	import std.file: exists, isDir, isFile, dirEntries, SpanMode;
@@ -69,7 +68,8 @@ void tryMain(string[] args)
 		// Since DMD 2.106.0
 		global.params.v.errorLimit = 0;
 
-	Appender!(Span!(const(char))) tags;
+	//Appender!(Span!(const(char))) tags;
+	Appender!(const(char)[][]) tags;
 	scope tagger = new SymbolTagger(tags);
 
 	void processSourceFile(string path)
@@ -96,7 +96,6 @@ void tryMain(string[] args)
 		File(tagfile, "r")
 			.byLineCopy
 			.filter!(line => !line.startsWith("!_TAG_"))
-			.map!((const(char)[] line) => line.span.headMutable)
 			.copy(tags);
 	}
 

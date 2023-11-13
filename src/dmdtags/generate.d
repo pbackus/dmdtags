@@ -1,8 +1,6 @@
 module dmdtags.generate;
 
 import dmdtags.tag;
-import dmdtags.appender;
-import dmdtags.span;
 
 import dmd.declaration: AliasDeclaration, VarDeclaration;
 import dmd.func: FuncDeclaration;
@@ -16,9 +14,10 @@ import dmd.dmodule: Module;
 import dmd.dsymbol: Dsymbol;
 import dmd.visitor: Visitor, SemanticTimeTransitiveVisitor;
 
+import std.array: Appender;
 import std.meta: AliasSeq;
 
-void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, Fields fields)
+void putTag(ref Appender!(const(char)[][]) sink, Dsymbol sym, Fields fields)
 {
 	import dmd.root.string: toDString;
 	import std.range: put;
@@ -35,10 +34,10 @@ void putTag(ref Appender!(Span!(const(char))) sink, Dsymbol sym, Fields fields)
 		sym.ident.toString, filename, sym.loc.linnum, fields
 	);
 
-	put(sink, tag.span.headMutable);
+	put(sink, tag);
 }
 
-void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
+void putTag(ref Appender!(const(char)[][]) sink, Module m, Fields fields)
 {
 	import std.range: put;
 	import std.format: format;
@@ -51,7 +50,7 @@ void putTag(ref Appender!(Span!(const(char))) sink, Module m, Fields fields)
 		m.ident.toString, m.srcfile.toString, line, fields
 	);
 
-	put(sink, tag.span.headMutable);
+	put(sink, tag);
 }
 
 // Members of these symbols are tagged with
@@ -81,11 +80,11 @@ class SymbolTagger : SemanticTimeTransitiveVisitor
 	import dmd.dsymbol: ScopeDsymbol, foreachDsymbol;
 	import dmd.attrib: VisibilityDeclaration;
 
-	private Appender!(Span!(const(char)))* sink;
+	private Appender!(const(char)[][])* sink;
 	private VisibilityDeclaration vd;
 	private ScopeDsymbol parentSym;
 
-	this(ref Appender!(Span!(const(char))) sink)
+	this(ref Appender!(const(char)[][]) sink)
 	{
 		this.sink = &sink;
 	}
