@@ -1,4 +1,5 @@
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_FILE_ENCODING	utf-8	//
 C	test/test.d	16;"	c	inherits:I	struct:S
 E	test/test.d	23;"	g
 I	test/test.d	12;"	i	struct:S

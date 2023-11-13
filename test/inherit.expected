@@ -1,4 +1,5 @@
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_FILE_ENCODING	utf-8	//
 Base	test/inherit.d	1;"	c
 Derived	test/inherit.d	5;"	c	inherits:I3,Base,I1
 I1	test/inherit.d	2;"	i
