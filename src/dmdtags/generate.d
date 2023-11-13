@@ -120,7 +120,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 			fields.kind = sym.toKind;
 			if (parentSym)
 				fields.scope_ = Scope(parentSym.toKind, parentSym.ident.toString);
-			static if (is(Symbol == FuncDeclaration))
+			static if (is(Symbol == FuncDeclaration) || is(Symbol == TemplateDeclaration))
 				fields.signature = sym.paramsToString;
 			fields.file = vd && vd.visibility.kind == Visibility.Kind.private_;
 
@@ -232,4 +232,32 @@ const(char)[] paramsToString(FuncDeclaration fd)
 		}
 	}
 	return null;
+}
+
+const(char)[] paramsToString(TemplateDeclaration td)
+{
+	import dmd.hdrgen: toCBuffer, HdrGenState;
+	import dmd.common.outbuffer: OutBuffer;
+
+	OutBuffer buf;
+	HdrGenState hgs;
+
+	buf.writestring("(");
+
+	if (td.parameters) {
+		foreach (i, param; *td.parameters) {
+			if (i > 0)
+				buf.writestring(", ");
+			static if (__traits(compiles, param.toCBuffer(&buf, &hgs)))
+				// Up to DMD 2.105.3
+				param.toCBuffer(&buf, &hgs);
+			else
+				// Since DMD 2.106.0
+				param.toCBuffer(buf, hgs);
+		}
+	}
+
+	buf.writestring(")");
+
+	return buf.extractSlice;
 }

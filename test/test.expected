@@ -8,21 +8,21 @@ ThreeInts	test/test.d	35;"	a
 bar	test/test.d	41;"	v	template:temp
 c	test/test.d	17;"	v	struct:S
 enumMember	test/test.d	25;"	e	enum:E
-eponymous	test/test.d	44;"	T
+eponymous	test/test.d	44;"	T	signature:(T)
 eponymous	test/test.d	44;"	f	template:eponymous	signature:(T t)
-eponymousWithExtra	test/test.d	61;"	T
+eponymousWithExtra	test/test.d	61;"	T	signature:()
 eponymousWithExtra	test/test.d	63;"	v	template:eponymousWithExtra
 foo	test/test.d	40;"	v	template:temp
 fun	test/test.d	28;"	f	signature:()
 hidden	test/test.d	64;"	v	template:eponymousWithExtra
 method	test/test.d	20;"	f	struct:S	signature:()
-overloaded	test/test.d	46;"	T
+overloaded	test/test.d	46;"	T	signature:(T)
 overloaded	test/test.d	48;"	f	template:overloaded	signature:(int)
 overloaded	test/test.d	49;"	f	template:overloaded	signature:(double)
 privateMember	test/test.d	58;"	v	struct:PrivateStruct	file:
 privateVar	test/test.d	54;"	v	file:
 stuff	test/test.d	36;"	v
-temp	test/test.d	38;"	T
+temp	test/test.d	38;"	T	signature:(T)
 test	test/test.d	6;"	M
 versionedSymbol	test/test.d	52;"	v
 w	test/test.d	15;"	v	struct:S
