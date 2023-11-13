@@ -1,5 +1,5 @@
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
-C	test/test.d	16;"	c	struct:S
+C	test/test.d	16;"	c	inherits:I	struct:S
 E	test/test.d	23;"	g
 I	test/test.d	12;"	i	struct:S
 PrivateStruct	test/test.d	56;"	s	file:

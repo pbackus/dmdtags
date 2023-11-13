@@ -1,0 +1,7 @@
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+Base	test/inherit.d	1;"	c
+Derived	test/inherit.d	5;"	c	inherits:I3,Base,I1
+I1	test/inherit.d	2;"	i
+I2	test/inherit.d	3;"	i
+I3	test/inherit.d	4;"	i	inherits:I2
+inherit	test/inherit.d	1;"	M

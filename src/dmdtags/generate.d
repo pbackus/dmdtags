@@ -117,6 +117,8 @@ class SymbolTagger : SemanticTimeTransitiveVisitor
 
 			Fields fields;
 			fields.kind = sym.toKind;
+			static if (is(Symbol : ClassDeclaration))
+				fields.inherits = sym.baseClassesToString;
 			if (parentSym)
 				fields.scope_ = Scope(parentSym.toKind, parentSym.ident.toString);
 			static if (is(Symbol == FuncDeclaration) || is(Symbol == TemplateDeclaration))
@@ -213,6 +215,30 @@ const(char)[] paramsToString(TemplateDeclaration td)
 	}
 
 	buf.writestring(")");
+
+	return buf.extractSlice;
+}
+
+const(char)[] baseClassesToString(ClassDeclaration cd)
+{
+	import dmd.hdrgen: toCBuffer, HdrGenState;
+	import dmd.common.outbuffer: OutBuffer;
+
+	OutBuffer buf;
+	HdrGenState hgs;
+
+	if (cd.baseclasses) {
+		foreach (i, base; *cd.baseclasses) {
+			if (i > 0)
+				buf.writestring(",");
+			static if (__traits(compiles, base.type.toCBuffer(&buf, null, &hgs)))
+				// Up to DMD 2.105.3
+				base.type.toCBuffer(&buf, null, &hgs);
+			else
+				// Since DMD 2.106.0
+				base.type.toCBuffer(buf, null, hgs);
+		}
+	}
 
 	return buf.extractSlice;
 }

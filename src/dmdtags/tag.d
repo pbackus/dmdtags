@@ -23,6 +23,9 @@ struct Fields
 {
 	Kind kind;
 
+	// base classes and interfaces
+	const(char)[] inherits;
+
 	Scope scope_;
 
 	// function parameters
@@ -40,6 +43,11 @@ struct Fields
 
 		result ~= "\t";
 		result ~= cast(char) kind;
+
+		if (inherits) {
+			result ~= "\tinherits:";
+			result ~= inherits;
+		}
 
 		if (scope_.kind != Kind.unknown) {
 			result ~= "\t";
