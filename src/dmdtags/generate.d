@@ -76,7 +76,7 @@ alias TaggableSymbols = AliasSeq!(
 	Module
 );
 
-extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
+class SymbolTagger : SemanticTimeTransitiveVisitor
 {
 	import dmd.dsymbol: ScopeDsymbol, foreachDsymbol;
 	import dmd.attrib: VisibilityDeclaration;
@@ -101,7 +101,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	 * semantic analysis, so we have to keep track of visibility attributes
 	 * while walking the parse tree.
 	 */
-	override void visit(VisibilityDeclaration innerVd)
+	extern(C++) override void visit(VisibilityDeclaration innerVd)
 	{
 		auto outerVd = vd;
 		scope(exit) vd = outerVd;
@@ -111,7 +111,7 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 	}
 
 	static foreach (Symbol; TaggableSymbols) {
-		override void visit(Symbol sym)
+		extern(C++) override void visit(Symbol sym)
 		{
 			import dmd.dsymbol: Visibility;
 			import std.meta: IndexOf = staticIndexOf;
@@ -141,11 +141,13 @@ extern(C++) class SymbolTagger : SemanticTimeTransitiveVisitor
 
 Kind toKind(Dsymbol sym)
 {
-	static extern(C++) class SymbolKindVisitor : Visitor
+	static class SymbolKindVisitor : Visitor
 	{
 		Kind result;
 
 		alias visit = typeof(super).visit;
+
+		extern(C++):
 
 		override void visit(AliasDeclaration) { result = Kind.alias_; }
 		override void visit(ClassDeclaration) { result = Kind.class_; }
